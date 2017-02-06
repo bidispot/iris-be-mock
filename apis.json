@@ -1,0 +1,44 @@
+[
+   {
+      "id":1,
+      "name":"Share prices",
+      "context":"Clearstream Xact",
+      "version":"1.0",
+      "visibility":"Public",
+      "thumbnail":null,
+      "description":"This API allows you to get latest share prices, options and futures",
+      "tags":"share, futures, options, prices, charts",
+      "api_endpoint":"https://dbpgo.herokuapp.com/share-prices",
+      "doc_endpoint":"https://dbpgo.herokuapp.com/share-prices/swagger-ui",
+      "rating":5,
+      "numberOfUsers":120
+   },
+   {
+      "id":2,
+      "name":"Accounts",
+      "context":"Clearstream Xact",
+      "version":"1.1",
+      "visibility":"Public",
+      "thumbnail":null,
+      "description":"This API lists all the accounts",
+      "tags":"accounts",
+      "api_endpoint":"https://dbpgo.herokuapp.com/accounts",
+      "doc_endpoint":"https://dbpgo.herokuapp.com/accounts/doc",
+      "rating":1,
+      "numberOfUsers":280
+   },
+   {
+      "id":3,
+      "name":"Balances",
+      "context":"Clearstream Xact",
+      "version":"1.1",
+      "visibility":"Public",
+      "thumbnail":null,
+      "description":"This API allows you to retrieve the cash balances for specified accounts",
+      "tags":"cash, balances",
+      "api_endpoint":"https://dbpgo.herokuapp.com/balances",
+      "doc_endpoint":"https://dbpgo.herokuapp.com/balances/doc",
+      "rating":3,
+      "numberOfUsers":330
+   }
+]
