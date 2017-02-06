@@ -14,6 +14,6 @@ Launch the node server:
 
 # Start playing
 
-Open your browser and type:
+Open your browser and type for instance:
 
-`http://localhost:3100/`
+`http://localhost:3100/api`
