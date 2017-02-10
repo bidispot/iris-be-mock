@@ -11,6 +11,9 @@ app.use(bodyParser.urlencoded({
 const apis = JSON.parse(fs.readFileSync('./apis.json', 'utf8'));
 const apps =  JSON.parse(fs.readFileSync('./apps.json', 'utf8'));
 
+var appSeqId = 10;
+var apiSeqId = 10;
+
 // Accept CORS
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -20,6 +23,14 @@ app.use(function(req, res, next) {
 });
 
 // api
+
+function findApiIndexById(id) {
+  for( var i = 0 ; i < apis.length ; i++) {
+    if (parseInt(apis[i].id) === id) {
+      return i;
+    }
+  }
+}
 
 app.get('/api', function(req, res) {
   res.json(apis);
@@ -36,9 +47,20 @@ app.get('/api/:id', function(req, res) {
     res.statusCode = 404;
     return res.send('Error 404: No api found');
   }
-
-  var q = apis[req.params.id];
-  res.json(q);
+  var result;
+  for( var i = 0 ; i < apis.length ; i++) {
+    if (parseInt(apis[i].id) === parseInt(req.params.id)) {
+      result = apis[i];
+      break;
+    }
+  }
+  if (result) {
+    var q = result;
+    res.json(q);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No api found');
+  }
 });
 
 app.post('/api', function(req, res) {
@@ -49,7 +71,7 @@ app.post('/api', function(req, res) {
   }
 
   var newApi = {
-    id : apis.length,
+    id : apiSeqId++,
     name: req.body.params.name,
     technical_name: req.body.params.technical_name,
     context: req.body.params.context,
@@ -77,6 +99,14 @@ app.delete('/api/:id', function(req, res) {
 
 // app
 
+function findAppIndexById(id) {
+  for( var i = 0 ; i < apps.length ; i++) {
+    if (parseInt(apps[i].id) === id) {
+      return i;
+    }
+  }
+}
+
 app.get('/app', function(req, res) {
   res.json(apps);
 });
@@ -88,24 +118,26 @@ app.get('/app/random', function(req, res) {
 });
 
 app.get('/app/:id', function(req, res) {
-  if(apps.length <= req.params.id || req.params.id < 0) {
+  const result = findAppIndexById(parseInt(req.params.id));
+  console.log("App with index: ", result)
+  if (result || result === 0) {
+    var q = apps[result];
+    res.json(q);
+  } else {
     res.statusCode = 404;
-    return res.send('Error 404: No app found');
+    return res.send('Error 404: No app found for id: ' + req.params.id);
   }
-
-  var q = apps[req.params.id];
-  res.json(q);
 });
 
 app.post('/app', function(req, res) {
   console.log("POST: ", req.body);
-  if(!req.body.params.hasOwnProperty('name')) {
+  if(!req.body.params || !req.body.params.hasOwnProperty('name')) {
     res.statusCode = 400;
     return res.send('Error 400: Post syntax incorrect.');
   }
 
   var newApp = {
-    id : apps.length,
+    id : appSeqId++,
     name : req.body.params.name,
     description : req.body.params.description,
     callback_url: req.body.params.callback_url
@@ -123,40 +155,63 @@ app.put('/app/:id', function(req, res) {
   }
 
   var newApp = {
-    id : apps.length,
+    id : apps[req.params.id],
     name : req.body.params.name,
     description : req.body.params.description,
     callback_url: req.body.params.callback_url
   };
 
-  apps[eq.params.id] = newApp;
+  console.log("Patch with new app: ", newApp);
 
-  res.json(true);
+  const result = findAppIndexById(parseInt(req.params.id));
+
+  if (result || result === 0) {
+    apps[result] = newApp;
+    res.json(true);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No app found for id: ' + req.params.id);
+  }
 });
 
 app.patch('/app/:id', function(req, res) {
   console.log("PATCH: ", req.body);
-  if(!req.body.params.hasOwnProperty('id') || req.body.params.hasOwnProperty('id') === '') {
+  if(!req.body.params.hasOwnProperty('name')) {
     res.statusCode = 400;
-    return res.send('Error 400: Post syntax incorrect: id is undefined or empty');
+    return res.send('Error 400: Post syntax incorrect.');
   }
 
-  apps[req.params.id].name=req.body.params.name;
-  apps[req.params.id].description=req.body.params.description;
-  apps[req.params.id].callback_url=req.body.params.callback_url;
+  var newApp = {
+    id : req.body.params.id,
+    name : req.body.params.name,
+    description : req.body.params.description,
+    callback_url: req.body.params.callback_url
+  };
 
-  res.json(true);
+  console.log("Patch with new app: ", newApp);
+
+  const result = findAppIndexById(parseInt(req.params.id));
+
+  if (result || result === 0) {
+    apps[result] = newApp;
+    res.json(true);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No app found for id: ' + req.params.id);
+  }
 });
 
 app.delete('/app/:id', function(req, res) {
   console.log("DELETE: ", req.body);
-  if(apps.length <= req.params.id) {
-    res.statusCode = 404;
-    return res.send('Error 404: No app found');
-  }
+  const result = findAppIndexById(parseInt(req.params.id));
 
-  apps.splice(req.params.id, 1);
-  res.json(true);
+  if (result || result === 0) {
+    apps.splice(result, 1);
+    res.json(true);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No app found for id: ' + req.params.id);
+  }
 });
 
 // Subscription
