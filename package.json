@@ -3,6 +3,9 @@
   "description": "a fine piece of express art",
   "version": "0.0.1",
   "dependencies": {
+    "body-parser": "^1.16.0",
+    "cookie-parser": "^1.4.3",
+    "cookie-session": "^2.0.0-alpha.2",
     "express": "^3.21.2"
   }
 }

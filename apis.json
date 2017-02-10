@@ -1,7 +1,8 @@
 [
    {
-      "id":1,
+      "id":0,
       "name":"Share prices",
+      "technical_name":"share-prices",
       "context":"Clearstream Xact",
       "version":"1.0",
       "visibility":"Public",
@@ -14,8 +15,9 @@
       "numberOfUsers":120
    },
    {
-      "id":2,
+      "id":1,
       "name":"Accounts",
+      "technical_name":"accounts",
       "context":"Clearstream Xact",
       "version":"1.1",
       "visibility":"Public",
@@ -28,8 +30,9 @@
       "numberOfUsers":280
    },
    {
-      "id":3,
+      "id":2,
       "name":"Balances",
+      "technical_name":"balances",
       "context":"Clearstream Xact",
       "version":"1.1",
       "visibility":"Public",

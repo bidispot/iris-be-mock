@@ -1,0 +1,8 @@
+[
+   {
+      "id":0,
+      "name":"New Kewl App",
+      "description": "This is the kewlest app ever",
+      "callback_url":"https://www.example.com"
+    }
+]
