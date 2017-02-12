@@ -43,23 +43,14 @@ app.get('/api/random', function(req, res) {
 });
 
 app.get('/api/:id', function(req, res) {
-  if(apis.length <= req.params.id || req.params.id < 0) {
-    res.statusCode = 404;
-    return res.send('Error 404: No api found');
-  }
-  var result;
-  for( var i = 0 ; i < apis.length ; i++) {
-    if (parseInt(apis[i].id) === parseInt(req.params.id)) {
-      result = apis[i];
-      break;
-    }
-  }
-  if (result) {
-    var q = result;
+  const result = findApiIndexById(parseInt(req.params.id));
+  console.log("Api with index: ", result)
+  if (result || result === 0) {
+    var q = apis[result];
     res.json(q);
   } else {
     res.statusCode = 404;
-    return res.send('Error 404: No api found');
+    return res.send('Error 404: No api found for id: ' + req.params.id);
   }
 });
 
@@ -87,14 +78,52 @@ app.post('/api', function(req, res) {
   res.json(true);
 });
 
-app.delete('/api/:id', function(req, res) {
-  if(apis.length <= req.params.id) {
-    res.statusCode = 404;
-    return res.send('Error 404: No api found');
+app.patch('/api/:id', function(req, res) {
+  console.log("PATCH: ", req.body);
+  if(!req.body.params.hasOwnProperty('name')) {
+    res.statusCode = 400;
+    return res.send('Error 400: Post syntax incorrect.');
   }
 
-  apis.splice(req.params.id, 1);
-  res.json(true);
+  const result = findApiIndexById(parseInt(req.params.id));
+
+  console.log("Patch with new api: ", newApi);
+
+  if (result || result === 0) {
+    var newApi = {
+      id : result,
+      name: req.body.params.name,
+      technical_name: req.body.params.technical_name,
+      context: req.body.params.context,
+      version: req.body.params.version,
+      visibility: req.body.params.visibility,
+      description:req.body.params.description,
+      tags:req.body.params.tags,
+      api_endpoint:req.body.params.api_endpoint,
+      doc_endpoint:req.body.params.doc_endpoint,
+      rating:apis[result].rating,
+      numberOfUsers:apis[result].numberOfUsers
+    };
+
+    apis[result] = newApi;
+    res.json(true);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No api found for id: ' + req.params.id);
+  }
+});
+
+app.delete('/api/:id', function(req, res) {
+  console.log("DELETE: ", req.body);
+  const result = findApiIndexById(parseInt(req.params.id));
+
+  if (result || result === 0) {
+    apis.splice(result, 1);
+    res.json(true);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No app found for id: ' + req.params.id);
+  }
 });
 
 // app
