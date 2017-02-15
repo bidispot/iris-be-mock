@@ -10,9 +10,11 @@ app.use(bodyParser.urlencoded({
 
 const apis = JSON.parse(fs.readFileSync('./apis.json', 'utf8'));
 const apps =  JSON.parse(fs.readFileSync('./apps.json', 'utf8'));
+const subscriptions =  JSON.parse(fs.readFileSync('./subscriptions.json', 'utf8'));
 
 var appSeqId = 10;
 var apiSeqId = 10;
+var subscriptionSeqId = 10;
 
 // Accept CORS
 app.use(function(req, res, next) {
@@ -243,6 +245,127 @@ app.delete('/app/:id', function(req, res) {
   }
 });
 
-// Subscription
+// subscriptions
+
+function findSubscriptionIndexById(id) {
+  for( var i = 0 ; i < subscriptions.length ; i++) {
+    if (parseInt(subscriptions[i].id) === id) {
+      return i;
+    }
+  }
+}
+
+app.get('/subscription', function(req, res) {
+  res.json(subscriptions);
+});
+
+app.get('/subscription/random', function(req, res) {
+  var id = Math.floor(Math.random() * subscriptions.length);
+  var q = subscriptions[id];
+  res.json(q);
+});
+
+app.get('/subscription/:id', function(req, res) {
+  const result = findSubscriptionIndexById(parseInt(req.params.id));
+  console.log("subscription with index: ", result)
+  if (result || result === 0) {
+    var q = subscriptions[result];
+    res.json(q);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No subscription found for id: ' + req.params.id);
+  }
+});
+
+app.post('/subscription', function(req, res) {
+  console.log("POST: ", req.body);
+  if(!req.body.params || !req.body.params.hasOwnProperty('name')) {
+    res.statusCode = 400;
+    return res.send('Error 400: Post syntax incorrect.');
+  }
+
+  var newSubscription = {
+    id : subscriptionSeqId++,
+    name : req.body.params.name,
+    description: req.body.params.description,
+    status: req.body.params.status,
+    app_id : req.body.params.app_id,
+    apis: req.body.params.apis
+  };
+
+  subscriptions.push(newSubscription);
+  res.json(true);
+});
+
+app.put('/subscription/:id', function(req, res) {
+  console.log("UPDATE: ", req.body);
+  if(!req.body.params.hasOwnProperty('name')) {
+    res.statusCode = 400;
+    return res.send('Error 400: Post syntax incorrect.');
+  }
+
+  var newSubscription = {
+    id : subscriptions[req.params.id],
+    name : req.body.params.name,
+    description: req.body.params.description,
+    status: req.body.params.status,
+    app_id : req.body.params.app_id,
+    apis: req.body.params.apis
+  };
+
+  console.log("Put new subscription: ", newSubscription);
+
+  const result = findSubscriptionIndexById(parseInt(req.params.id));
+
+  if (result || result === 0) {
+    subscriptions[result] = newSubscription;
+    res.json(true);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No subscription found for id: ' + req.params.id);
+  }
+});
+
+app.patch('/subscription/:id', function(req, res) {
+  console.log("PATCH: ", req.body);
+  if(!req.body.params.hasOwnProperty('name')) {
+    res.statusCode = 400;
+    return res.send('Error 400: Post syntax incorrect.');
+  }
+
+  var newSubscription = {
+    id : subscriptions[req.params.id],
+    name : req.body.params.name,
+    description: req.body.params.description,
+    status: req.body.params.status,
+    app_id : req.body.params.app_id,
+    apis: req.body.params.apis
+  };
+
+  console.log("Patch with new subscription: ", newSubscription);
+
+  const result = findSubscriptionIndexById(parseInt(req.params.id));
+
+  if (result || result === 0) {
+    subscriptions[result] = newSubscription;
+    res.json(true);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No subscription found for id: ' + req.params.id);
+  }
+});
+
+app.delete('/subscription/:id', function(req, res) {
+  console.log("DELETE: ", req.body);
+  const result = findSubscriptionIndexById(parseInt(req.params.id));
+
+  if (result || result === 0) {
+    subscriptions.splice(result, 1);
+    res.json(true);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No subscription found for id: ' + req.params.id);
+  }
+});
 
 app.listen(process.env.PORT || 3100);
