@@ -1,0 +1,10 @@
+[
+   {
+      "id":0,
+      "name":"My kewl app APIs subscription",
+      "description": "My APIs subscription for my kewl app",
+      "status": "active",
+      "app_id": 0,
+      "apis":[0,1,2]
+    }
+]
