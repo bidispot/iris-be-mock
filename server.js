@@ -32,10 +32,25 @@ function findApiIndexById(id) {
       return i;
     }
   }
+  return null;
 }
 
 app.get('/api', function(req, res) {
-  res.json(apis);
+  console.log("GET: ", req.query.apis);
+  if (req.query && req.query.apis && req.query.apis.length > 0) {
+
+      var result = [];
+      for (var i = 0; i < req.query.apis.length; i++) {
+        const index = findApiIndexById(parseInt(req.query.apis[i]));
+        if (index !== null) {
+          result.push(apis[index]);
+        }
+      }
+      console.log(result)
+      res.json(result);
+  } else {
+    res.json(apis);
+  }
 });
 
 app.get('/api/random', function(req, res) {
@@ -49,7 +64,7 @@ app.get('/api/:id', function(req, res) {
   console.log("Api with index: ", result)
   if (result || result === 0) {
     var q = apis[result];
-    res.json(q);
+    res.json([q]);
   } else {
     res.statusCode = 404;
     return res.send('Error 404: No api found for id: ' + req.params.id);
@@ -136,10 +151,24 @@ function findAppIndexById(id) {
       return i;
     }
   }
+  return null;
 }
 
 app.get('/app', function(req, res) {
-  res.json(apps);
+  console.log("GET: ", req.query.apps);
+  if (req.query && req.query.apps && req.query.apps.length > 0) {
+      var result = [];
+      for (var i = 0; i < req.query.apps.length; i++) {
+        const index = findAppIndexById(parseInt(req.query.apps[i]));
+        if (index !== null) {
+          result.push(apps[index]);
+        }
+      }
+      console.log(result)
+      res.json(result);
+  } else {
+    res.json(apps);
+  }
 });
 
 app.get('/app/random', function(req, res) {
@@ -153,7 +182,7 @@ app.get('/app/:id', function(req, res) {
   console.log("App with index: ", result)
   if (result || result === 0) {
     var q = apps[result];
-    res.json(q);
+    res.json([q]);
   } else {
     res.statusCode = 404;
     return res.send('Error 404: No app found for id: ' + req.params.id);
@@ -270,7 +299,7 @@ app.get('/subscription/:id', function(req, res) {
   console.log("subscription with index: ", result)
   if (result || result === 0) {
     var q = subscriptions[result];
-    res.json(q);
+    res.json([q]);
   } else {
     res.statusCode = 404;
     return res.send('Error 404: No subscription found for id: ' + req.params.id);
