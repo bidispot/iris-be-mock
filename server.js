@@ -10,9 +10,11 @@ app.use(bodyParser.urlencoded({
 
 const apis = JSON.parse(fs.readFileSync('./apis.json', 'utf8'));
 const apps =  JSON.parse(fs.readFileSync('./apps.json', 'utf8'));
+const packs =  JSON.parse(fs.readFileSync('./packs.json', 'utf8'));
 const subscriptions =  JSON.parse(fs.readFileSync('./subscriptions.json', 'utf8'));
 
 var appSeqId = 10;
+var packsSeqId = 10;
 var apiSeqId = 10;
 var subscriptionSeqId = 10;
 
@@ -36,13 +38,15 @@ function findApiIndexById(id) {
 }
 
 app.get('/api', function(req, res) {
-  console.log("GET: ", req.query.apis);
+  console.log("GET with params? ", req.query.apis);
   if (req.query && req.query.apis && req.query.apis.length > 0) {
 
       var result = [];
       for (var i = 0; i < req.query.apis.length; i++) {
+        console.log("Looking for: ", parseInt(req.query.apis[i]));
         const index = findApiIndexById(parseInt(req.query.apis[i]));
         if (index !== null) {
+          console.log("Adding: ", apis[index].id);
           result.push(apis[index]);
         }
       }
@@ -271,6 +275,137 @@ app.delete('/app/:id', function(req, res) {
   } else {
     res.statusCode = 404;
     return res.send('Error 404: No app found for id: ' + req.params.id);
+  }
+});
+
+// Packages
+
+function findPackIndexById(id) {
+  for( var i = 0 ; i < packs.length ; i++) {
+    if (parseInt(packs[i].id) === id) {
+      return i;
+    }
+  }
+  return null;
+}
+
+app.get('/package', function(req, res) {
+  console.log("GET: ", req.query.packs);
+  if (req.query && req.query.packs && req.query.packs.length > 0) {
+      var result = [];
+      for (var i = 0; i < req.query.packs.length; i++) {
+        const index = findPackIndexById(parseInt(req.query.packs[i]));
+        if (index !== null) {
+          result.push(packs[index]);
+        }
+      }
+      console.log(result)
+      res.json(result);
+  } else {
+    res.json(packs);
+  }
+});
+
+app.get('/package/random', function(req, res) {
+  var id = Math.floor(Math.random() * packs.length);
+  var q = packs[id];
+  res.json(q);
+});
+
+app.get('/package/:id', function(req, res) {
+  const result = findPackIndexById(parseInt(req.params.id));
+  console.log("Package with index: ", result)
+  if (result || result === 0) {
+    var q = packs[result];
+    res.json([q]);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No package found for id: ' + req.params.id);
+  }
+});
+
+app.post('/package', function(req, res) {
+  console.log("POST: ", req.body);
+  if(!req.body.params || !req.body.params.hasOwnProperty('name')) {
+    res.statusCode = 400;
+    return res.send('Error 400: Post syntax incorrect.');
+  }
+
+  var newPack = {
+    id : packSeqId++,
+    name : req.body.params.name,
+    description : req.body.params.description,
+    callback_url: req.body.params.callback_url
+  };
+
+  packs.push(newPack);
+  res.json(true);
+});
+
+app.put('/package/:id', function(req, res) {
+  console.log("UPDATE: ", req.body);
+  if(!req.body.params.hasOwnProperty('name')) {
+    res.statusCode = 400;
+    return res.send('Error 400: Post syntax incorrect.');
+  }
+
+  var newPack = {
+    id : packs[req.params.id],
+    name : req.body.params.name,
+    description : req.body.params.description,
+    callback_url: req.body.params.callback_url
+  };
+
+  console.log("Patch with new package: ", newPack);
+
+  const result = findPackIndexById(parseInt(req.params.id));
+
+  if (result || result === 0) {
+    packs[result] = newPack;
+    res.json(true);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No package found for id: ' + req.params.id);
+  }
+});
+
+app.patch('/package/:id', function(req, res) {
+  console.log("PATCH: ", req.body);
+  if(!req.body.params.hasOwnProperty('name')) {
+    res.statusCode = 400;
+    return res.send('Error 400: Post syntax incorrect.');
+  }
+
+  var newPack = {
+    id : req.body.params.id,
+    name : req.body.params.name,
+    description : req.body.params.description,
+    callback_url: req.body.params.callback_url
+  };
+
+  console.log("Patch with new package: ", newPack);
+
+  const result = findPackIndexById(parseInt(req.params.id));
+
+  if (result || result === 0) {
+    packs[result] = newPack;
+    res.json(true);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No package found for id: ' + req.params.id);
+  }
+});
+
+app.delete('/package/:id', function(req, res) {
+  console.log("DELETE: ", req.body);
+  const result = findPackIndexById(parseInt(req.params.id));
+
+  if (result || result === 0) {
+    packs.splice(result, 1);
+    res.json(true);
+  } else {
+    res.statusCode = 404;
+    return res.send('Error 404: No package found for id: ' + req.params.id);
   }
 });
 
