@@ -1,20 +1,5 @@
 [
    {
-      "id":0,
-      "name":"Share prices",
-      "technical_name":"share-prices",
-      "context":"Clearstream Xact",
-      "version":"1.0",
-      "visibility":"Public",
-      "thumbnail":null,
-      "description":"This API allows you to get latest share prices, options and futures",
-      "tags":"share, futures, options, prices, charts",
-      "api_endpoint":"https://dbpgo.herokuapp.com/share-prices",
-      "doc_endpoint":"https://dbpgo.herokuapp.com/share-prices/swagger-ui",
-      "rating":5,
-      "numberOfUsers":120
-   },
-   {
       "id":3,
       "name":"Accounts",
       "technical_name":"accounts",
@@ -46,13 +31,13 @@
    },
    {
      "id":9,
-     "name":"Share prices Local",
-     "technical_name":"share-prices local",
+     "name":"Share prices",
+     "technical_name":"share-prices",
      "context":"Clearstream Xact",
      "version":"1.0",
      "visibility":"Public",
      "thumbnail":null,
-     "description":"This API allows you to get latest share prices, options and futures (locally)",
+     "description":"This API allows you to get latest share prices, options and futures",
      "tags":"share, futures, options, prices, charts",
      "api_endpoint":"http://localhost:8000/sharePrices",
      "doc_endpoint":"http://localhost:8000/swagger-ui.html#!/share-price-rest-controller/",

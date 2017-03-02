@@ -1,16 +1,3 @@
 [
-   {
-      "id":0,
-      "name":"Exchange 4.0 Trading Platform",
-      "description": "The trading platform package includes a unique state-of-the-art system for selling and purchasing items.",
-      "callback_url":"https://www.example.com",
-      "rating": 4
-    },
-    {
-       "id":6,
-       "name":"Collateral Management",
-       "description": "The collateral management package provides you with the most efficient system for collateralizing assets.",
-       "callback_url":"https://www.example.com",
-       "rating": 5
-     }
+   
 ]

@@ -53,6 +53,7 @@ app.get('/api', function(req, res) {
       console.log(result)
       res.json(result);
   } else {
+    console.log("List of apis: ", apis);
     res.json(apis);
   }
 });
@@ -108,11 +109,9 @@ app.patch('/api/:id', function(req, res) {
 
   const result = findApiIndexById(parseInt(req.params.id));
 
-  console.log("Patch with new api: ", newApi);
-
   if (result || result === 0) {
     var newApi = {
-      id : result,
+      id : apis[result].id,
       name: req.body.params.name,
       technical_name: req.body.params.technical_name,
       context: req.body.params.context,
@@ -128,6 +127,8 @@ app.patch('/api/:id', function(req, res) {
 
     apis[result] = newApi;
     res.json(true);
+
+    console.log("Patch with new api: ", newApi);
   } else {
     res.statusCode = 404;
     return res.send('Error 404: No api found for id: ' + req.params.id);
@@ -211,33 +212,6 @@ app.post('/app', function(req, res) {
   res.json(true);
 });
 
-app.put('/app/:id', function(req, res) {
-  console.log("UPDATE: ", req.body);
-  if(!req.body.params.hasOwnProperty('name')) {
-    res.statusCode = 400;
-    return res.send('Error 400: Post syntax incorrect.');
-  }
-
-  var newApp = {
-    id : apps[req.params.id],
-    name : req.body.params.name,
-    description : req.body.params.description,
-    callback_url: req.body.params.callback_url
-  };
-
-  console.log("Patch with new app: ", newApp);
-
-  const result = findAppIndexById(parseInt(req.params.id));
-
-  if (result || result === 0) {
-    apps[result] = newApp;
-    res.json(true);
-  } else {
-    res.statusCode = 404;
-    return res.send('Error 404: No app found for id: ' + req.params.id);
-  }
-});
-
 app.patch('/app/:id', function(req, res) {
   console.log("PATCH: ", req.body);
   if(!req.body.params.hasOwnProperty('name')) {
@@ -245,18 +219,18 @@ app.patch('/app/:id', function(req, res) {
     return res.send('Error 400: Post syntax incorrect.');
   }
 
-  var newApp = {
-    id : req.body.params.id,
-    name : req.body.params.name,
-    description : req.body.params.description,
-    callback_url: req.body.params.callback_url
-  };
-
-  console.log("Patch with new app: ", newApp);
-
   const result = findAppIndexById(parseInt(req.params.id));
 
   if (result || result === 0) {
+    var newApp = {
+      id : apps[result].id,
+      name : req.body.params.name,
+      description : req.body.params.description,
+      callback_url: req.body.params.callback_url
+    };
+
+    console.log("Patch with new app: ", newApp);
+
     apps[result] = newApp;
     res.json(true);
   } else {
@@ -342,33 +316,6 @@ app.post('/package', function(req, res) {
   res.json(true);
 });
 
-app.put('/package/:id', function(req, res) {
-  console.log("UPDATE: ", req.body);
-  if(!req.body.params.hasOwnProperty('name')) {
-    res.statusCode = 400;
-    return res.send('Error 400: Post syntax incorrect.');
-  }
-
-  var newPack = {
-    id : packs[req.params.id],
-    name : req.body.params.name,
-    description : req.body.params.description,
-    callback_url: req.body.params.callback_url
-  };
-
-  console.log("Patch with new package: ", newPack);
-
-  const result = findPackIndexById(parseInt(req.params.id));
-
-  if (result || result === 0) {
-    packs[result] = newPack;
-    res.json(true);
-  } else {
-    res.statusCode = 404;
-    return res.send('Error 404: No package found for id: ' + req.params.id);
-  }
-});
-
 app.patch('/package/:id', function(req, res) {
   console.log("PATCH: ", req.body);
   if(!req.body.params.hasOwnProperty('name')) {
@@ -376,18 +323,17 @@ app.patch('/package/:id', function(req, res) {
     return res.send('Error 400: Post syntax incorrect.');
   }
 
-  var newPack = {
-    id : req.body.params.id,
-    name : req.body.params.name,
-    description : req.body.params.description,
-    callback_url: req.body.params.callback_url
-  };
-
-  console.log("Patch with new package: ", newPack);
-
   const result = findPackIndexById(parseInt(req.params.id));
-
   if (result || result === 0) {
+    var newPack = {
+      id : packs[result].id,
+      name : req.body.params.name,
+      description : req.body.params.description,
+      callback_url: req.body.params.callback_url
+    };
+
+    console.log("Patch with new package: ", newPack);
+
     packs[result] = newPack;
     res.json(true);
   } else {
@@ -420,6 +366,7 @@ function findSubscriptionIndexById(id) {
 }
 
 app.get('/subscription', function(req, res) {
+  console.log("List of subscriptions: ", subscriptions);
   res.json(subscriptions);
 });
 
@@ -461,56 +408,28 @@ app.post('/subscription', function(req, res) {
   res.json(true);
 });
 
-app.put('/subscription/:id', function(req, res) {
-  console.log("UPDATE: ", req.body);
-  if(!req.body.params.hasOwnProperty('name')) {
-    res.statusCode = 400;
-    return res.send('Error 400: Post syntax incorrect.');
-  }
-
-  var newSubscription = {
-    id : subscriptions[req.params.id],
-    name : req.body.params.name,
-    description: req.body.params.description,
-    status: req.body.params.status,
-    app_id : req.body.params.app_id,
-    apis: req.body.params.apis
-  };
-
-  console.log("Put new subscription: ", newSubscription);
-
-  const result = findSubscriptionIndexById(parseInt(req.params.id));
-
-  if (result || result === 0) {
-    subscriptions[result] = newSubscription;
-    res.json(true);
-  } else {
-    res.statusCode = 404;
-    return res.send('Error 404: No subscription found for id: ' + req.params.id);
-  }
-});
-
 app.patch('/subscription/:id', function(req, res) {
-  console.log("PATCH: ", req.body);
+  console.log("PATCH: ", req.body, " ID: ", req.params.id);
   if(!req.body.params.hasOwnProperty('name')) {
     res.statusCode = 400;
     return res.send('Error 400: Post syntax incorrect.');
   }
 
-  var newSubscription = {
-    id : subscriptions[req.params.id],
-    name : req.body.params.name,
-    description: req.body.params.description,
-    status: req.body.params.status,
-    app_id : req.body.params.app_id,
-    apis: req.body.params.apis
-  };
-
-  console.log("Patch with new subscription: ", newSubscription);
-
   const result = findSubscriptionIndexById(parseInt(req.params.id));
 
   if (result || result === 0) {
+
+    var newSubscription = {
+      id : subscriptions[result].id,
+      name : req.body.params.name,
+      description: req.body.params.description,
+      status: req.body.params.status,
+      app_id : req.body.params.app_id,
+      apis: req.body.params.apis
+    };
+
+    console.log("Patch with new subscription: ", newSubscription);
+
     subscriptions[result] = newSubscription;
     res.json(true);
   } else {
